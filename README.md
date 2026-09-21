@@ -38,3 +38,4 @@ La documentazione completa è nella cartella `docs/`:
 ## Stato Progetto
 
 🟡 **Fase**: Analisi e Design — In attesa di approvazione per iniziare lo sviluppo
+
