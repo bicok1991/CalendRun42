@@ -254,3 +254,21 @@ Le tipologie di allenamento (Scarico, Qualità, Mantenimento, Lungo, etc.) **NON
 ### Decisione:
 - Campo "tipo" = **testo libero** con autocomplete dai tipi già usati
 - Emoji = scelta opzionale, con default basato su keyword matching (es. "scarico" → 🟢, "lungo" → 🏃)
+
+---
+
+## 10. Prossima Sessione — Argomenti da Trattare
+
+**Data nota**: 21 settembre 2026 (sera)
+
+### 📋 Da spiegare all'utente:
+1. **Database (IndexedDB)** — Come funziona, quali tabelle ci sono, come interagisce col codice JS
+2. **Come testare da PC** — Flusso di sviluppo locale (file:// vs server locale, DevTools mobile view)
+3. **Come deployare su cellulare** — GitHub Pages + "Aggiungi alla schermata Home" su Samsung
+4. **Come aggiornare su cellulare** — Service Worker update, cache invalidation, workflow di aggiornamento
+
+### ❓ Domande da fare all'utente:
+1. **Dati iniziali**: Ha già una scheda di allenamento pronta da inserire? O iniziamo con dati di esempio?
+2. **Periodo di allenamento**: Quante settimane dura il piano? C'è una gara obiettivo con data precisa?
+3. **Tempo del test**: Ha già un tempo del test da cui calcolare i ritmi?
+4. **Priorità sviluppo**: Da cosa vuole partire — calendario, inserimento allenamenti, o configurazione ritmi?
