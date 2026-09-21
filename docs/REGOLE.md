@@ -100,3 +100,14 @@
 | 📸 Info dall'utente | brainstorm.md + docs pertinenti + changelog.md |
 | ❌ Funzionalità rimossa | requisiti.md (marcata ❌) + changelog.md |
 | 🔀 Cambio di rotta | ADR vecchia → "Superata" + nuova ADR + changelog.md |
+
+---
+
+## Regola 9: Commit Solo dall'Utente
+
+**QUANDO**: Vengono fatte modifiche ai file del progetto
+**ALLORA**:
+- L'assistente **NON deve MAI** eseguire `git commit`, `git push` o altri comandi git di scrittura autonomamente
+- L'assistente **propone** le modifiche → l'utente **approva** → l'assistente **applica al codice**
+- I **commit e push** li fa **ESCLUSIVAMENTE l'utente**
+- L'assistente può eseguire comandi git di sola lettura (status, log, diff) senza chiedere permesso
