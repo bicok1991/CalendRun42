@@ -389,3 +389,19 @@ Formula: `3 km RD + 7 km RL + 1 km RD`
 ### Dubbi aperti:
 1. **Modalità di caricamento template**: come viene caricata la scheda dei coach? Screenshot + OCR? Import file? Inserimento manuale? — Da definire
 2. **Formato sorgente**: in che formato i coach mandano la scheda? (screenshot app, PDF, messaggio, Excel?)
+
+---
+
+## 16. Porta di Sviluppo Locale — 8042
+
+**Data**: 22 settembre 2026
+**Input dell'utente**:
+
+> "Per non rischiare di intercettare porte già usate nei vari sistemi di lavoro qui sul pc aziendale, possiamo usare un'altra porta? Tipo 8042, simpaticamente per coerenza con la distanza maratona."
+
+### Decisione:
+- **Porta dev server**: `8042` (invece della classica 8080)
+- **Motivo pratico**: il PC aziendale ha già servizi attivi su porte comuni (8080, 3000, ecc.)
+- **Motivo simpatico**: 42 = distanza maratona in km 🏃
+- **Comando**: `python3 -m http.server 8042` dalla cartella `src/`
+- **URL locale**: `http://localhost:8042`

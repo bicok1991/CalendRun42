@@ -1,0 +1,321 @@
+/* ═══════════════════════════════════════════════════════
+   CalenRun42 — Design System & Stili Base
+   ═══════════════════════════════════════════════════════ */
+
+/* ─── CSS Custom Properties (Design Tokens) ─────────── */
+:root {
+  /* Palette — Dark Mode */
+  --bg-primary:     #0f172a;   /* sfondo principale (slate-900) */
+  --bg-secondary:   #1e293b;   /* sfondo card/sezioni (slate-800) */
+  --bg-tertiary:    #334155;   /* sfondo hover/attivo (slate-700) */
+  --bg-elevated:    #1e293b;   /* header/nav (slate-800) */
+
+  --text-primary:   #f1f5f9;   /* testo principale (slate-100) */
+  --text-secondary: #94a3b8;   /* testo secondario (slate-400) */
+  --text-muted:     #64748b;   /* testo disabilitato (slate-500) */
+
+  /* Accent — Arancione runner */
+  --accent:         #f97316;   /* arancione (orange-500) */
+  --accent-hover:   #fb923c;   /* arancione chiaro (orange-400) */
+  --accent-subtle:  rgba(249, 115, 22, 0.15); /* sfondo accent tenue */
+
+  /* Colori Ritmi */
+  --color-rg:       #f97316;   /* Ritmo Gara — arancione */
+  --color-rm:       #eab308;   /* Ritmo Medio — giallo */
+  --color-ra:       #22c55e;   /* Ritmo Allegro — verde */
+  --color-rl:       #3b82f6;   /* Ritmo Lento — blu */
+  --color-rd:       #8b5cf6;   /* Ritmo Defaticamento — viola */
+
+  /* Colori Stato */
+  --color-done:     #22c55e;   /* ✅ Fatto — verde */
+  --color-skipped:  #ef4444;   /* ❌ Saltato — rosso */
+  --color-pending:  #64748b;   /* ⬜ Da fare — grigio */
+
+  /* Bordi & Separatori */
+  --border-color:   #334155;   /* bordo card (slate-700) */
+  --border-radius:  12px;      /* arrotondamento card */
+  --border-radius-sm: 8px;     /* arrotondamento piccolo */
+
+  /* Spaziature */
+  --spacing-xs:     4px;
+  --spacing-sm:     8px;
+  --spacing-md:     16px;
+  --spacing-lg:     24px;
+  --spacing-xl:     32px;
+
+  /* Tipografia */
+  --font-family:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-size-xs:   0.75rem;   /* 12px */
+  --font-size-sm:   0.875rem;  /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-lg:   1.125rem;  /* 18px */
+  --font-size-xl:   1.5rem;    /* 24px */
+
+  /* Transizioni */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+
+  /* Ombre */
+  --shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md:  0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lg:  0 10px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* ─── Reset & Base ──────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  line-height: 1.5;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Layout App ────────────────────────────────────── */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-color);
+  padding: var(--spacing-md);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.app-title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.app-main {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+  padding-bottom: 80px; /* spazio per la nav fissa */
+}
+
+/* ─── Navigazione Bottom Tab ────────────────────────── */
+.app-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--border-color);
+  padding: var(--spacing-sm) 0;
+  padding-bottom: env(safe-area-inset-bottom, var(--spacing-sm));
+}
+
+.nav-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--spacing-xs) 0;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-family);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-tab.active {
+  color: var(--accent);
+}
+
+.nav-tab:active {
+  color: var(--accent-hover);
+}
+
+.nav-icon {
+  font-size: 1.25rem;
+}
+
+.nav-label {
+  font-weight: 500;
+}
+
+/* ─── Viste (show/hide) ─────────────────────────────── */
+.view {
+  display: none;
+}
+
+.view.active {
+  display: block;
+}
+
+/* ─── View Header ───────────────────────────────────── */
+.view-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-lg);
+}
+
+.view-header h2 {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+/* ─── Bottoni ───────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-primary:active {
+  background: var(--accent-hover);
+}
+
+.btn-sm {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-xs);
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-icon:active {
+  background: var(--bg-tertiary);
+}
+
+.btn-icon .icon {
+  font-size: 1.25rem;
+}
+
+/* ─── Empty State ───────────────────────────────────── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl) var(--spacing-md);
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-md);
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.empty-hint {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+}
+
+/* ─── Card Base (per settimane, allenamenti, gare) ─── */
+.card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+  transition: background var(--transition-fast);
+}
+
+.card:active {
+  background: var(--bg-tertiary);
+}
+
+/* ─── Badge Ritmi ───────────────────────────────────── */
+.pace-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.pace-badge--rg { background: var(--color-rg); color: #fff; }
+.pace-badge--rm { background: var(--color-rm); color: #1a1a1a; }
+.pace-badge--ra { background: var(--color-ra); color: #fff; }
+.pace-badge--rl { background: var(--color-rl); color: #fff; }
+.pace-badge--rd { background: var(--color-rd); color: #fff; }
+
+/* ─── Status Badge ──────────────────────────────────── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+}
+
+.status-badge--done    { color: var(--color-done); }
+.status-badge--skipped { color: var(--color-skipped); }
+.status-badge--pending { color: var(--color-pending); }
+
+/* ─── Utility ───────────────────────────────────────── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

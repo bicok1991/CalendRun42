@@ -80,3 +80,26 @@
 ### 📄 File Aggiornati
 - `docs/analisi/brainstorm.md` — Aggiunte sezioni 11 (Template/Istanza), 12 (Stati), 13 (Storico Gare), 14 (Distanza/Durata), 15 (Editabilità Template). Ogni sezione include i dubbi aperti da discutere in futuro.
 - `docs/changelog/changelog.md` — Questa voce
+
+---
+
+## 2026-09-22 (mattina) — Scaffolding PWA e Design System
+
+### 🏗️ Creazione struttura base dell'app
+- **Scaffolding completo**: creata la struttura file della PWA dentro `src/`
+- **Design System CSS**: palette dark mode (slate tones), colori per i 5 ritmi (RG/RM/RA/RL/RD), colori stato (fatto/saltato/da fare), tipografia Inter, layout mobile-first
+- **Shell dell'app**: header sticky, navigazione bottom tab a 3 viste (Calendario/Ritmi/Gare), empty states per ogni vista
+- **PWA Manifest**: `manifest.json` con nome, colori tema, orientamento portrait, icone
+- **Service Worker**: strategia Cache-First per funzionamento offline
+- **Icona app**: generata icona con runner arancione su sfondo navy + griglia calendario
+- **Navigazione JS**: tab switching funzionante tra le 3 viste
+
+### 📄 File Creati
+- `src/index.html` — Scheletro HTML con header, nav, 3 viste, empty states
+- `src/css/style.css` — Design system completo con variabili CSS, reset, componenti
+- `src/js/app.js` — Entry point: navigazione tab + registrazione SW
+- `src/sw.js` — Service Worker con precache e strategia Cache-First
+- `src/manifest.json` — Manifest PWA per installabilità
+- `src/icons/icon-192.png` — Icona app 192px
+- `src/icons/icon-512.png` — Icona app 512px
+- `docs/changelog/changelog.md` — Questa voce
