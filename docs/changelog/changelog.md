@@ -65,3 +65,18 @@
   - `docs/specs/modello-dati.md` — Titolo, nome database IndexedDB
   - `docs/decisioni/ADR-004-git-locale.md` — Testo, comando cd, URL remote
 - **Knowledge Item aggiornato**: regole permanenti con nuovo nome e path
+
+---
+
+## 2026-09-22 — Sessione di Brainstorming: Spunti Architetturali
+
+### 🧠 Nuovi concetti raccolti
+- **Piano riutilizzabile (Template/Istanza)**: il blocco di allenamenti non è usa-e-getta, ma un template permanente che viene "proiettato" su ogni nuova gara. Quando cambi gara obiettivo, le settimane si ricalcolano, gli stati ripartono freschi.
+- **Stati allenamento/settimana**: idea catturata (✅ Fatto / ❌ Saltato / ⬜ Da fare) — da sviluppare più avanti. Stati slegati dal template, vivono sull'istanza.
+- **Storico gare**: confermato — archivio consultabile delle preparazioni passate con risultati.
+- **Distanza totale + durata stimata**: ogni allenamento deve mostrare km totali e durata stimata, calcolabili automaticamente dalla formula + ritmi configurati.
+- **Editabilità template**: possibile ma low priority — l'utente esegue la scheda dei coach, non la progetta.
+
+### 📄 File Aggiornati
+- `docs/analisi/brainstorm.md` — Aggiunte sezioni 11 (Template/Istanza), 12 (Stati), 13 (Storico Gare), 14 (Distanza/Durata), 15 (Editabilità Template). Ogni sezione include i dubbi aperti da discutere in futuro.
+- `docs/changelog/changelog.md` — Questa voce
