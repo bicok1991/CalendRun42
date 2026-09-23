@@ -405,3 +405,48 @@ Formula: `3 km RD + 7 km RL + 1 km RD`
 - **Motivo simpatico**: 42 = distanza maratona in km 🏃
 - **Comando**: `python3 -m http.server 8042` dalla cartella `src/`
 - **URL locale**: `http://localhost:8042`
+
+---
+
+## 17. Analisi Critica del Modello Dati — Sessione di Design DB
+
+**Data**: 23 settembre 2026
+
+### Contesto:
+Sessione dedicata alla revisione profonda del modello dati, prima di scrivere codice. Identificati **7 problemi strutturali** nel modello originale.
+
+### Problemi chiave identificati:
+1. **Stato su Template**: `completed`/`completedDate` vivono su Workout (template) ma dovrebbero vivere sull'istanza
+2. **Nessuna separazione Template/Istanza**: il pattern "carica una volta, ricicla per ogni gara" non funziona col modello attuale
+3. **Date statiche su Template**: le settimane del template hanno `dateFrom`/`dateTo` ma dovrebbero avere solo posizioni relative
+4. **PaceConfig ambiguo**: deve vivere sull'istanza (i ritmi cambiano tra una preparazione e l'altra)
+5. **Extra-running mescolati**: palestra/arbitraggio sono tipi di Workout ma dovrebbero essere una tabella separata (CalendarEvent)
+6. **Formula non strutturata**: testo libero impedisce calcolo automatico distanza/durata
+7. **Race ibrida**: la tabella Race fa troppi lavori (evento, modificatore piano, storico)
+
+### Architettura proposta — 3 Layer:
+- **Layer Template** (3 tabelle): Template, TemplateWeek, TemplateWorkout — permanente, riutilizzabile, senza date
+- **Layer Istanza** (4 tabelle): Preparation, InstanceWeek, InstanceWorkout, PaceConfig — specifico per gara, con date e stati
+- **Layer Calendario** (2 tabelle): Race, CalendarEvent — eventi nel tempo
+
+### 15 domande sul modello dati — Tracker risposte
+
+| # | Area | Stato | Risposta |
+|---|---|---|---|
+| D1 | Template | ✅ | Piano completo (12 sett. standard), ma lunghezza parametrizzabile (più lunga o più corta) |
+| D2 | Template | ✅ | **Aggiornamento**: una sola PREPARAZIONE attiva alla volta, MA il DB deve supportare più TEMPLATE in libreria (es. scheda Ravenna 12 sett. + scheda Rimini 13 sett.). Ogni template è indipendente con le sue settimane e allenamenti |
+| D3 | Template | ✅ | Nessun giorno fisso, allenamenti numerati 1,2,3. Tutto dinamico: giorni variabili, ordine invertibile, skip possibili. Spunto UX da Garmin Connect: "pianifica in calendario" = dall'allenamento, assegnarlo a un giorno. **TODO futuro (lontano)**: valutare integrazione API Garmin Connect per sync allenamenti |
+| D4 | Template | ✅ | Settimane numerate progressivamente (come i giorni). Campi opzionali `title` + `description` per etichetta/note da screenshot coach. Pattern uniforme su settimane E allenamenti: `numero - (titolo) - (desc) - altri dati` |
+| D5 | Istanza | ✅ | Parte sempre da settimana 1. Se c'è meno tempo (es. 10 sett. prima della gara), l'utente mette le prime settimane in NASCONDI. Il piano resta intero, non si "taglia". L'utente ha anche proposto la struttura FK gerarchica: Template → TemplateWeek → TemplateWorkout con chiavi composite |
+| D6 | Istanza | ⬜ | |
+| D7 | Istanza | 🟡 | Parziale da D3/D5: l'utente distingue almeno 3 stati: FATTO / NASCONDI (so in anticipo che non lo faccio) / SALTATO (non l'ho fatto). Da approfondire la semantica |
+| D8 | Istanza | ⬜ | |
+| D9 | Calendario | ⬜ | |
+| D10 | Calendario | ⬜ | |
+| D11 | Calendario | ✅ | Da D3: NO giorno della settimana sul template. Gli allenamenti sono solo ordinati (1, 2, 3...). Il giorno reale lo decide l'utente nell'istanza |
+| D12 | Ritmi | ⬜ | |
+| D13 | Ritmi | ⬜ | |
+| D14 | Gare | 🟡 | Parziale da D2: SÌ, ci sono gare intermedie (mezze maratone) dentro la preparazione — fungono da sostituti del "lungo" |
+| D15 | Gare | ⬜ | |
+
+### 📌 Stato: 6/15 risposte ricevute (+ 2 parziali) — in attesa delle rimanenti.

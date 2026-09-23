@@ -69,6 +69,9 @@
   - Export: scarica file JSON con tutti i dati del piano
   - Import: carica file JSON per ripristinare un piano
   - Utile per backup o trasferimento ad altro dispositivo
+  - Il file JSON deve essere leggibile e modificabile con editor di testo
+  - Possibilità futura: generare statistiche, export verso Excel
+  - Possibilità futura: consultazione dati da PC (via DevTools USB o file esportato)
 
 ### RF-08: Progressi e Statistiche (Fase 2)
 - **Priorità**: 🟢 Bassa

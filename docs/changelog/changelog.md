@@ -103,3 +103,25 @@
 - `src/icons/icon-192.png` — Icona app 192px
 - `src/icons/icon-512.png` — Icona app 512px
 - `docs/changelog/changelog.md` — Questa voce
+
+---
+
+## 2026-09-23 — Analisi Critica Modello Dati (DB Design)
+
+### 🔬 Revisione profonda del database
+- **7 problemi strutturali** identificati nel modello dati originale
+- **Architettura a 3 layer** proposta: Template (3 tab.) / Istanza (4 tab.) / Calendario (2 tab.)
+- **15 domande** poste all'utente per solidificare il modello
+- **6/15 risposte ricevute** (D1-D5 + D11), 2 parziali (D7, D14) — ripartire da **D6**
+
+### Decisioni prese
+- **Chiavi UUID + FK** (non composite) — per supportare drag & drop e semplicità query
+- **Segments JSON embedded** nel workout (non tabella separata) — naturale per IndexedDB
+- **Tipo segmento `freetext`** per formule non codificabili — con distanza stimata opzionale
+- **Segments editabili** dall'utente via UI — per correggere parsing errati
+- **Import/Export** arricchito: JSON leggibile, modificabile, futuro export Excel/statistiche
+
+### 📄 File Aggiornati
+- `docs/analisi/brainstorm.md` — Sezione 17 (analisi critica) + tracker D1-D15
+- `docs/specs/requisiti.md` — RF-07 arricchito con specifiche export/import
+- `docs/changelog/changelog.md` — Questa voce
