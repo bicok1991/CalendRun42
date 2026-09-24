@@ -125,3 +125,23 @@
 - `docs/analisi/brainstorm.md` — Sezione 17 (analisi critica) + tracker D1-D15
 - `docs/specs/requisiti.md` — RF-07 arricchito con specifiche export/import
 - `docs/changelog/changelog.md` — Questa voce
+
+---
+
+## 2026-09-24 — Proseguimento Analisi Modello Dati (D6-D9)
+
+### 🔬 Domande DB — sessione 2
+- **D6** ✅ — Una sola preparazione attiva alla volta (conferma D2)
+- **D7** ✅ — Stati definiti: allenamento = `plannedDate` + `status` (null/done/skipped); settimana = `status` memorizzato (non calcolato dai figli). "Nascondi" non è uno stato, è assenza di plannedDate
+- **D8** ✅ — Per ora basta done/skipped + campi opzionali `actualDistance` e `actualDuration`. TODO: integrazione Strava/Garmin
+- **D9** ✅ — Più attività nello stesso giorno permesse, warning UI per qualsiasi sovrapposizione
+
+### Nuove decisioni architetturali
+- **Tabella `ActivityType`**: anagrafica tipi attività (Corsa 🏃, Palestra 🏋️, Arbitraggio 🚩) con dropdown + possibilità di aggiungerne nuovi. Tipi allenamento running (scarico, qualità, lungo) restano testo libero
+- **Corse libere**: uscite fuori piano registrabili come CalendarEvent tipo "Corsa", distinte visivamente dagli allenamenti del piano
+
+### 📄 File Aggiornati
+- `docs/analisi/brainstorm.md` — Tracker D6-D9, sezione 12 chiusa, sezione 18 (ActivityType + corse libere)
+- `docs/changelog/changelog.md` — Questa voce
+
+### 📌 Stato: 10/15 risposte — ripartire da **D10**

@@ -316,13 +316,13 @@ Il modello attuale ha `completed` e `completedDate` sulla tabella Workout. Quest
 - Ogni settimana nell'istanza corrente ha uno **stato** analogo
 - Lo stato è un dato dell'**istanza** (non del template) — così quando ricicli il piano gli stati ripartono puliti
 
-### 🔓 Dubbi aperti da discutere quando si progetterà questa feature:
-1. **Quanti stati esattamente?** Per ora ipotizzati 3: ⬜ Da fare (default), ✅ Fatto, ❌ Saltato. Ce ne servono altri?
-2. **Stato settimana — automatico o manuale?** Si calcola automaticamente dai figli (tutti ✅ → settimana ✅)? O lo decide l'utente manualmente?
-3. **Motivo del "saltato"**: basta sapere che è saltato, o serve un campo libero per il motivo? (es. "arbitraggio a Bologna", "febbre", "ferie Grecia")
-4. **Note sull'istanza**: vuoi poter aggiungere note specifiche per quell'esecuzione? (es. "gambe pesanti", "fatto in 4:35/km") — queste sarebbero sull'istanza, non sul template
-5. **Icona/UI dello stato saltato**: l'utente ha menzionato "croce" o "occhio trasparente" — definire l'icona esatta nella fase di design
-6. **Interazione con attività extra-running**: se un arbitraggio cade su un giorno di allenamento, l'allenamento va automaticamente in "saltato"? O resta indipendente?
+### ✅ Decisioni prese (sessione 24 settembre — D7):
+1. **Quanti stati?** Per gli allenamenti: `null` (da fare) / `done` / `skipped`. Il concetto di "nascondi" non è uno stato: è un allenamento senza `plannedDate`. Per le settimane: `null` (da affrontare) / `done` (trascorsa) / `skipped` (esclusa deliberatamente)
+2. **Stato settimana — automatico o manuale?** MANUALE, memorizzato nel DB. NON calcolato dai figli. Settimana `done` = "ci sono passato, chiusa", indipendentemente da quanti allenamenti ho fatto
+3. **Motivo del "saltato"**: campo `notes` (testo libero) su InstanceWorkout e InstanceWeek
+4. **Note sull'istanza**: sì, campo `notes` su InstanceWorkout per annotazioni post-allenamento
+5. **Icona/UI dello stato saltato**: da definire nella fase di design UI
+6. **Interazione con extra-running**: da chiarire in D9
 
 ---
 
@@ -438,10 +438,10 @@ Sessione dedicata alla revisione profonda del modello dati, prima di scrivere co
 | D3 | Template | ✅ | Nessun giorno fisso, allenamenti numerati 1,2,3. Tutto dinamico: giorni variabili, ordine invertibile, skip possibili. Spunto UX da Garmin Connect: "pianifica in calendario" = dall'allenamento, assegnarlo a un giorno. **TODO futuro (lontano)**: valutare integrazione API Garmin Connect per sync allenamenti |
 | D4 | Template | ✅ | Settimane numerate progressivamente (come i giorni). Campi opzionali `title` + `description` per etichetta/note da screenshot coach. Pattern uniforme su settimane E allenamenti: `numero - (titolo) - (desc) - altri dati` |
 | D5 | Istanza | ✅ | Parte sempre da settimana 1. Se c'è meno tempo (es. 10 sett. prima della gara), l'utente mette le prime settimane in NASCONDI. Il piano resta intero, non si "taglia". L'utente ha anche proposto la struttura FK gerarchica: Template → TemplateWeek → TemplateWorkout con chiavi composite |
-| D6 | Istanza | ⬜ | |
-| D7 | Istanza | 🟡 | Parziale da D3/D5: l'utente distingue almeno 3 stati: FATTO / NASCONDI (so in anticipo che non lo faccio) / SALTATO (non l'ho fatto). Da approfondire la semantica |
-| D8 | Istanza | ⬜ | |
-| D9 | Calendario | ⬜ | |
+| D6 | Istanza | ✅ | Una sola preparazione attiva alla volta (conferma D2). Le gare intermedie (mezza, 32km) entrano nel calendario al posto del "lungo" della settimana |
+| D7 | Istanza | ✅ | **Allenamento**: 2 campi — `plannedDate` (null=non assegnato) + `status` (null=da fare, done=✅, skipped=❌). "Nascondi" non è uno stato: è semplicemente un allenamento senza plannedDate. **Settimana**: `status` memorizzato (NON calcolato dai figli) — null=da affrontare, done=trascorsa/chiusa, skipped=esclusa deliberatamente (es. ferie). Campo `notes` su InstanceWorkout e InstanceWeek |
+| D8 | Istanza | ✅ | Per ora basta CHECK. Due campi opzionali: `actualDistance` (default da template, modificabile se accorcio) e `actualDuration` (tempo effettivo, inserito a mano). **TODO futuro**: integrazione Strava/Garmin Connect per auto-popolare |
+| D9 | Calendario | ✅ | Più attività nello stesso giorno permesse (corsa+corsa, corsa+palestra, arbitraggio+corsa, ecc.). Nessun vincolo DB. Warning UI se si pianifica qualsiasi attività in un giorno che ne ha già un'altra — l'utente conferma e procede |
 | D10 | Calendario | ⬜ | |
 | D11 | Calendario | ✅ | Da D3: NO giorno della settimana sul template. Gli allenamenti sono solo ordinati (1, 2, 3...). Il giorno reale lo decide l'utente nell'istanza |
 | D12 | Ritmi | ⬜ | |
@@ -449,4 +449,41 @@ Sessione dedicata alla revisione profonda del modello dati, prima di scrivere co
 | D14 | Gare | 🟡 | Parziale da D2: SÌ, ci sono gare intermedie (mezze maratone) dentro la preparazione — fungono da sostituti del "lungo" |
 | D15 | Gare | ⬜ | |
 
-### 📌 Stato: 6/15 risposte ricevute (+ 2 parziali) — in attesa delle rimanenti.
+### 📌 Stato: 10/15 risposte ricevute (+ 1 parziale D14) — ripartire da **D10**.
+
+---
+
+## 18. Tabella Anagrafica Tipi Attività — ActivityType
+
+**Data**: 24 settembre 2026
+**Input dell'utente**:
+
+> "I campi liberi non mi piacciono mai: una volta potrei scrivere 'corsa', un'altra 'run', un'altra sbagliare e scrivere 'runing'. Avere una mini tabella con la lista delle attività è sempre buona norma, anche solo per dare la possibilità di scegliere da un menu a tendina."
+
+### Decisione: tabella `ActivityType` per gli eventi del calendario
+
+```
+ActivityType
+├── id:        UUID
+├── name:      "Corsa" / "Palestra" / "Arbitraggio" / ...
+├── emoji:     "🏃" / "🏋️" / "🚩" / ...
+├── color:     (opzionale, per differenziare nel calendario)
+├── sortOrder: ordine nel dropdown
+├── isDefault: true solo per Corsa
+```
+
+Pre-caricata con: Corsa 🏃 (default), Palestra 🏋️, Arbitraggio 🚩
+L'utente può aggiungerne di nuovi in qualsiasi momento (Trekking, Calcetto, Nuoto, ecc.)
+
+### Tipi allenamento running → restano testo libero
+
+I sottotipi di allenamento (Scarico, Qualità, Lungo, Mantenimento...) restano a testo libero sul `TemplateWorkout`, perché:
+- Li decide il coach, cambiano da scheda a scheda
+- Il coach potrebbe scrivere varianti ("scarico." vs "scarico") → un'anagrafica creerebbe blocchi o duplicati
+- L'utente non configura questi valori, li riceve → non serve dropdown
+
+### Corse libere (fuori piano)
+
+L'utente può fare uscite running **non previste dal piano** (corsetta libera, corsa con amici). Queste si registrano come `CalendarEvent` con tipo "Corsa" — stessa logica di aggiungere una sessione di palestra. Nel calendario si distinguono visivamente:
+- **Corsa dal piano** (InstanceWorkout): ha segmenti, distanza, ritmi, collegata al template
+- **Corsa libera** (CalendarEvent tipo Corsa): evento semplice, senza dettagli strutturati
