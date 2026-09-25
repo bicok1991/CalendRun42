@@ -145,3 +145,27 @@
 - `docs/changelog/changelog.md` — Questa voce
 
 ### 📌 Stato: 10/15 risposte — ripartire da **D10**
+
+---
+
+## 2026-09-25 — Proseguimento Analisi Modello Dati (D10, D12, D13)
+
+### 🔬 Domande DB — sessione 3
+- **D10** ✅ — Ogni attività indipendente. Extra-running = segnaposto "giorno occupato". Per coerenza mantengono lo stesso `status` (null/done/skipped) del running + possibilità di cancellare l'evento
+- **D12** ✅ — Ritmi inseriti manualmente, editabili in qualsiasi momento. **Pattern Snapshot**: al CHECK, ritmi e segmenti congelati sull'InstanceWorkout → storico blindato
+- **D13** ✅ — Storico test = TODO futuro (non ora). Per ora i valori li inserisce l'utente a mano
+
+### Nuove decisioni architetturali
+- **Principio Running-First**: l'app è strutturata per la corsa, le altre attività sono solo contorno/segnaposto calendario (sezione 20 brainstorm)
+- **Pattern Snapshot al CHECK**: al completamento di un allenamento, si congelano sia i ritmi (paceSnapshot) sia i segmenti (segmentsSnapshot) come JSON sull'InstanceWorkout. Allenamenti futuri usano valori live, completati usano valori congelati (sezione 21 brainstorm)
+- **Coerenza modello CalendarEvent/InstanceWorkout**: stesso campo `status`, ma CalendarEvent ha in più la possibilità di cancellazione
+
+### 💡 Idea catturata
+- **Sistema Feedback In-App** (TODO futuro): bottone discreto (❓/💬) in ogni pagina, cattura contesto automatico (pagina, sezione), utile sia per l'utente che per condivisione futura con altri (sezione 19 brainstorm)
+
+### 📄 File Aggiornati
+- `docs/analisi/brainstorm.md` — Sezioni 19 (feedback), 20 (running-first), 21 (snapshot). Tracker D10, D12, D13
+- `docs/changelog/changelog.md` — Questa voce
+
+### 📌 Stato: 13/15 risposte — ripartire da **D14** (parziale) e **D15**
+
