@@ -442,14 +442,14 @@ Sessione dedicata alla revisione profonda del modello dati, prima di scrivere co
 | D7 | Istanza | ✅ | **Allenamento**: 2 campi — `plannedDate` (null=non assegnato) + `status` (null=da fare, done=✅, skipped=❌). "Nascondi" non è uno stato: è semplicemente un allenamento senza plannedDate. **Settimana**: `status` memorizzato (NON calcolato dai figli) — null=da affrontare, done=trascorsa/chiusa, skipped=esclusa deliberatamente (es. ferie). Campo `notes` su InstanceWorkout e InstanceWeek |
 | D8 | Istanza | ✅ | Per ora basta CHECK. Due campi opzionali: `actualDistance` (default da template, modificabile se accorcio) e `actualDuration` (tempo effettivo, inserito a mano). **TODO futuro**: integrazione Strava/Garmin Connect per auto-popolare |
 | D9 | Calendario | ✅ | Più attività nello stesso giorno permesse (corsa+corsa, corsa+palestra, arbitraggio+corsa, ecc.). Nessun vincolo DB. Warning UI se si pianifica qualsiasi attività in un giorno che ne ha già un'altra — l'utente conferma e procede |
-| D10 | Calendario | ⬜ | |
+| D10 | Calendario | ✅ | Ogni attività è indipendente, nessuna subordinazione. Gli eventi extra-running sono "segnaposto" per sapere che il giorno è occupato. Per **coerenza e semplicità**, mantengono lo stesso `status` (null/done/skipped) degli allenamenti running + possibilità di **cancellare** l'evento. Nella pratica la tracciabilità interessa soprattutto per il running, ma il modello resta uniforme |
 | D11 | Calendario | ✅ | Da D3: NO giorno della settimana sul template. Gli allenamenti sono solo ordinati (1, 2, 3...). Il giorno reale lo decide l'utente nell'istanza |
-| D12 | Ritmi | ⬜ | |
-| D13 | Ritmi | ⬜ | |
+| D12 | Ritmi | ✅ | Ritmi inseriti manualmente dall'utente, editabili in qualsiasi momento. Se modificati, l'app mostra i calcoli aggiornati per gli allenamenti futuri. **Pattern Snapshot**: al CHECK di un allenamento, i ritmi usati vengono congelati sull'InstanceWorkout — così lo storico resta fisso anche se i ritmi cambiano dopo |
+| D13 | Ritmi | ✅ | **TODO futuro**: sezione storico test (data + cronometro). Per ora NON sviluppare né approfondire. I valori li inserisce l'utente a mano |
 | D14 | Gare | 🟡 | Parziale da D2: SÌ, ci sono gare intermedie (mezze maratone) dentro la preparazione — fungono da sostituti del "lungo" |
 | D15 | Gare | ⬜ | |
 
-### 📌 Stato: 10/15 risposte ricevute (+ 1 parziale D14) — ripartire da **D10**.
+### 📌 Stato: 13/15 risposte ricevute (+ 1 parziale D14) — prossima: **D14**.
 
 ---
 
@@ -487,3 +487,121 @@ I sottotipi di allenamento (Scarico, Qualità, Lungo, Mantenimento...) restano a
 L'utente può fare uscite running **non previste dal piano** (corsetta libera, corsa con amici). Queste si registrano come `CalendarEvent` con tipo "Corsa" — stessa logica di aggiungere una sessione di palestra. Nel calendario si distinguono visivamente:
 - **Corsa dal piano** (InstanceWorkout): ha segmenti, distanza, ritmi, collegata al template
 - **Corsa libera** (CalendarEvent tipo Corsa): evento semplice, senza dettagli strutturati
+
+---
+
+## 19. 💡 TODO — Sistema di Feedback In-App
+
+**Data**: 25 settembre 2026
+**Input dell'utente**:
+
+> "Un piccolo bottone (icona punto di domanda o simile) in un punto non fastidioso di ogni pagina (tipo in basso a sinistra), che rileva il punto in cui mi trovo per annotare un feedback: così non devo spiegare dove mi trovavo, il contesto è già registrato."
+
+### Concetto:
+Un meccanismo leggero per raccogliere feedback **contestualizzati**:
+- **Bottone discreto** (icona ❓ o 💬) in posizione fissa (es. basso-sinistra), presente su ogni pagina
+- Al click, si apre un mini-form per scrivere un feedback
+- Il sistema cattura automaticamente il **contesto**: pagina corrente, sezione visualizzata, eventuale dettaglio attivo
+- Il feedback viene salvato con: testo + timestamp + contesto automatico
+
+### Motivazioni:
+1. **Per l'utente stesso**: annotare cose da migliorare senza dover descrivere "dove" si trova — il contesto è già catturato
+2. **Per condivisione futura**: se l'app viene condivisa con altri, raccogliere i loro feedback in modo strutturato
+
+### Requisiti TODO (da approfondire):
+- Dove salvare i feedback? (IndexedDB locale? Export periodico?)
+- UI del bottone: icona, posizione, animazione
+- Contenuto del contesto catturato: URL/route, componente attivo, stato filtri/selezioni
+- Export/revisione dei feedback raccolti
+- Priorità: **bassa** — da implementare dopo le funzionalità core
+
+### 📌 Stato: IDEA CATTURATA — TODO futuro, non bloccante
+
+---
+
+## 20. Principio Architetturale: Running-First — Extra-Running = Segnaposto
+
+**Data**: 25 settembre 2026
+**Input dell'utente**:
+
+> "Questa app è strutturata per la corsa. Tutto ciò che è 'in più' — le altre attività — sono solo di contorno. Il fatto che le pianifico a calendario è per rendermi conto, quando devo assegnare i vari giorni della settimana-scheda, per pianificarle in giornate 'libere'."
+
+### Principio fondamentale:
+L'app è **running-first**. Gli eventi extra-running (palestra, arbitraggio, altro) esistono nel calendario con UN SOLO scopo: segnalare che un giorno è **occupato**, così l'utente evita di piazzarci un allenamento running.
+
+### Conseguenze sul modello dati:
+
+| Aspetto | InstanceWorkout (running) | CalendarEvent (extra-running) |
+|---|---|---|
+| **Status** | `null` / `done` / `skipped` | ✅ **Stesso modello** per coerenza |
+| **Se non svolto** | Resta, marcato `skipped` | Marcato `skipped` **oppure cancellato** |
+| **Tracking storico** | ✅ Interessa molto | 🟡 Poco usato, ma disponibile |
+| **Dettagli** | Segmenti, distanza, durata, ritmi, note | Solo titolo + data (al massimo note) |
+| **Scopo** | L'allenamento da eseguire e tracciare | Segnaposto "giorno occupato" |
+
+### Scelta di design: coerenza > minimalismo
+L'utente ha chiesto di mantenere `status` (null/done/skipped) anche su CalendarEvent, per **uniformità del modello**. Nella pratica lo userà poco per extra-running (più spesso cancellerà l'evento), ma avere lo stesso comportamento ovunque semplifica UI e logica.
+
+### Esempi d'uso concreti dall'utente:
+1. **Arbitraggio**: arriva ~1 settimana prima con giorno già fissato → lo pianifico → quando assegno i giorni running della settimana, so che quel giorno è occupato
+2. **Palestra**: se salta → l'utente può scegliere: marcare `skipped` OPPURE rimuovere l'evento
+
+### Impatto sulla tabella `CalendarEvent`:
+- **Campo `status`**: sì, stessa logica di InstanceWorkout (null/done/skipped)
+- **Cancellazione**: operazione in più rispetto a InstanceWorkout (che invece resta sempre, al massimo `skipped`)
+- Il campo `notes` resta opzionale
+- Storico extra-running: disponibile ma non prioritario
+
+---
+
+## 21. Pattern Snapshot — Congelare i Ritmi al Completamento
+
+**Data**: 25 settembre 2026
+**Input dell'utente**:
+
+> "Dato che i valori (RD, etc) possono cambiare, DEVI registrare i valori usati per quell'allenamento, così che lo storico con CHECK rimanga fisso al giorno dell'allenamento."
+
+### Il problema:
+I ritmi (RD, RL, RM, ecc.) sono **editabili** — l'utente può cambiarli in qualsiasi momento (perché si sente meglio, o perché ha rifatto il test). Ma se i ritmi cambiano, i calcoli di durata stimata degli allenamenti **già completati** non devono aggiornarsi.
+
+### La soluzione — Snapshot:
+Quando un allenamento viene marcato come `done` (CHECK ✅), l'`InstanceWorkout` salva uno **snapshot** dei ritmi/calcoli usati al momento del completamento.
+
+### Esempio concreto:
+
+```
+Lunedì:    RD = 5:00/km
+           Allenamento: 10km RD → stima 50 min
+           CHECK ✅ → salva: {paces: {RD: "5:00"}, estimatedDuration: "50:00"}
+
+Martedì:   Utente cambia RD → 6:00/km
+
+Mercoledì: Allenamento: 10km RD → stima 60 min (usa ritmi correnti)
+
+Storico:   Lunedì mostra ancora 50 min ← congelato, NON ricalcolato
+           Mercoledì (se completato) salverà 60 min
+```
+
+### Impatto sul modello — campi snapshot su InstanceWorkout:
+
+```
+InstanceWorkout
+├── ... (campi esistenti)
+├── paceSnapshot:      JSON   // ritmi congelati al momento del CHECK
+├── segmentsSnapshot:  JSON   // segmenti congelati al momento del CHECK
+├── estimatedDistance:  float  // distanza calcolata (congelata)
+├── estimatedDuration:  string // durata stimata (congelata)
+```
+
+- **Quando si popola**: al momento del passaggio a `status = done`
+- **Cosa si congela**: sia i ritmi (dalla PaceConfig) sia i segmenti (dal TemplateWorkout)
+- **Allenamenti non completati**: usano sempre segmenti dal template + ritmi **correnti** dalla PaceConfig
+- **Allenamenti completati**: usano i valori **congelati** negli snapshot
+
+### Perché snapshot anche dei segmenti (non solo ritmi):
+L'utente ha confermato: "nel dubbio, applichiamo la stessa logica ai ritmi — al CHECK immortaliamo anche la foto istantanea delle sequenze di allenamento". Il costo è praticamente zero (un campo JSON), la garanzia è totale: lo storico è blindato indipendentemente da cosa succede al template dopo.
+
+### Note:
+- I ritmi li inserisce l'utente a mano (no calcolo automatico da test, per ora)
+- **TODO futuro**: sezione storico test (data + cronometro) — non ora
+- Nessuna tabella aggiuntiva: tutto embedded come JSON su InstanceWorkout
